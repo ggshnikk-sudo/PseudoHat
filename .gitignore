@@ -1,0 +1,15 @@
+# Gradle
+build/
+.gradle/
+*.hprof
+
+# Dev client environment
+run/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store

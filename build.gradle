@@ -1,0 +1,83 @@
+plugins {
+	id "net.fabricmc.fabric-loom" version "${loom_version}"
+	id "maven-publish"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
+
+repositories {
+	mavenCentral()
+	// GeckoLib is published to Modrinth's maven; the old cloudsmith/geckolib.com mirrors are dead.
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Optional (soft) dependency: compiled against, never required at runtime.
+	compileOnly "maven.modrinth:geckolib:${project.geckolib_version}"
+
+	// Dev client only: GeckoLib and its hard fabric-api dependency, so the
+	// geckolib render path can be exercised by `runClient` without a manual
+	// run/mods folder.
+	localRuntime "maven.modrinth:geckolib:${project.geckolib_version}"
+	localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	testImplementation platform("org.junit:junit-bom:5.11.4")
+	testImplementation "org.junit.jupiter:junit-jupiter"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
+	options.release = project.java_version as int
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(project.java_version as int)
+	}
+	withSourcesJar()
+}
+
+processResources {
+	inputs.property "version", project.version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+jar {
+	from("LICENSE") { rename { "${it}_${project.base.archivesName.get()}" } }
+}
+
+loom {
+	runs {
+		client {
+			// Renders the layer trace, which is how a missing cosmetic gets diagnosed.
+			vmArg "-Dpseudohat.debug=true"
+
+			// Dev accounts get a random name every run, which would never match a model file name.
+			programArg "--username"
+			programArg "PseudohatDev"
+		}
+	}
+}

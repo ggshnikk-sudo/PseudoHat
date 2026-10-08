@@ -1,0 +1,22 @@
+{
+  "credit": "PseudoHat",
+  "parent": "block/block",
+  "textures": {
+    "all": "pseudohat:pseudohat_cube",
+    "particle": "pseudohat:pseudohat_cube"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16]},
+        "south": {"uv": [0, 0, 16, 16]},
+        "east": {"uv": [0, 0, 16, 16]},
+        "west": {"uv": [0, 0, 16, 16]},
+        "up": {"uv": [0, 0, 16, 16]},
+        "down": {"uv": [0, 0, 16, 16]}
+      }
+    }
+  ]
+}
